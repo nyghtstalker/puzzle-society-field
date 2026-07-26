@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0f10">
-<title>Puzzle Society Field Network</title>
+<title>Puzzle Society Field Network V1.2</title>
 <style>
 :root {
   --bg:#0d0f10;
@@ -256,6 +256,103 @@ REASSEMBLING DATA...</div>
       <button class="btn" id="begin">Begin Recovery</button>
       
     </section>
+
+    <section class="screen" id="s7">
+      <h1>Fragment II Signal</h1>
+      <p class="lead">The Field Network has isolated a local signal.</p>
+      <div class="card">
+        <div class="label">Signal Strength</div>
+        <div class="signal live"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="mono">63% // LOCAL</div>
+      </div>
+      <div class="card">
+        <div class="label">Location Data</div>
+        <div style="display:flex;justify-content:space-around;align-items:center;font-size:42px;padding:10px 0 6px">
+          <span>🎲</span><span>♟️</span><span>🃏</span>
+        </div>
+        <p class="muted" style="text-align:center;margin-bottom:2px">SIGNAL SOURCE UNKNOWN</p>
+      </div>
+      <div class="card">
+        <div class="label">Field Directive</div>
+        <div class="bigstatus">LOCATE THE SIGNAL</div>
+        <p>Take the Field Device with you.</p>
+      </div>
+      <button class="btn" id="found2">I Found Fragment II</button>
+    </section>
+
+    <section class="screen" id="s8">
+      <h1>Verify Fragment II</h1>
+      <div class="card">
+        <div class="label">Recovery Status</div>
+        <div class="progress"><div style="width:20%"></div></div>
+        <div class="mono muted">20% RECOVERED</div>
+        <div class="frags">
+          <div class="frag on">I</div><div class="frag">II</div><div class="frag">?</div><div class="frag">?</div><div class="frag">?</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Recovered Object</div>
+        <div class="bigstatus">FRAGMENT II</div>
+        <p>Insert Fragment II into slot II of the Field Data Recovery Unit.</p>
+      </div>
+      <button class="btn" id="verify2">Verify Fragment II</button>
+    </section>
+
+    <section class="screen" id="s9">
+      <h1>Fragment II Verified</h1>
+      <div class="card success">
+        <div class="label">Recovery Status</div>
+        <div class="progress"><div id="p40"></div></div>
+        <div class="mono">40% RECOVERED</div>
+        <div class="frags">
+          <div class="frag on">I</div><div class="frag on">II</div><div class="frag">?</div><div class="frag">?</div><div class="frag">?</div>
+        </div>
+      </div>
+      <div class="card glitch" id="catData">
+        <div class="label">Unexpected Data</div>
+        <div class="scanner blink" id="catText">CHECKING FRAGMENT INTEGRITY...</div>
+      </div>
+      <button class="btn" id="continueCat" disabled>Continue Recovery</button>
+    </section>
+
+    <section class="screen" id="s10">
+      <h1>Unidentified Network Activity</h1>
+      <div class="card error">
+        <div class="label">Source</div>
+        <div class="bigstatus">UNKNOWN</div>
+        <p class="mono">NOT PRESENT IN SOCIETY RECORDS</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="label">Recovered Mark</div>
+        <div style="font-size:58px;line-height:1.2">🐾</div>
+        <p class="muted">Identification failed.</p>
+      </div>
+      <div class="card">
+        <div class="label">System Response</div>
+        <div class="scanner">LOGGING ANOMALY...
+CONTINUING RECOVERY PROTOCOL.</div>
+      </div>
+      <button class="btn" id="to3">Search for Fragment III</button>
+    </section>
+
+    <section class="screen" id="s11">
+      <h1>Fragment III</h1>
+      <div class="card">
+        <div class="label">Signal Status</div>
+        <div class="bigstatus">VISUAL DATA CORRUPTED</div>
+        <p class="mono">STANDARD SPECTRUM: NO SIGNAL</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="label">Alternate Spectrum Required</div>
+        <div style="font-size:54px;line-height:1.2">✦</div>
+        <p class="muted">Use the light marked with this symbol.</p>
+      </div>
+      <div class="card">
+        <div class="label">Directive</div>
+        <div class="bigstatus">BEGIN LOCAL SCAN</div>
+      </div>
+    </section>
+
   </main>
   <div class="footer">OBSERVE • QUESTION • DISCOVER</div>
 </div>
@@ -308,9 +405,30 @@ document.getElementById('continue2').addEventListener('click', async()=>{
   document.getElementById('identified').disabled=false;
 });
 document.getElementById('identified').addEventListener('click',()=>show('s6'));
-document.getElementById('begin').addEventListener('click',()=>{
-  alert('FIELD RECOVERY PROTOCOL READY.\nFragment II sequence will be added next.');
+document.getElementById('begin').addEventListener('click',()=>show('s7'));
+document.getElementById('found2').addEventListener('click',()=>show('s8'));
+
+document.getElementById('verify2').addEventListener('click', async()=>{
+  show('s9');
+  await delay(200);
+  document.getElementById('p40').style.width='40%';
+  const box=document.getElementById('catData');
+  const txt=document.getElementById('catText');
+  await delay(1000);
+  txt.textContent='CHECKING FRAGMENT INTEGRITY...\nDATA MATCH CONFIRMED';
+  await delay(900);
+  box.classList.add('glitching');
+  await delay(650);
+  box.classList.remove('glitching');
+  txt.textContent='DATA MATCH CONFIRMED\nWARNING: FOREIGN DATA ATTACHED';
+  await delay(900);
+  txt.textContent='WARNING: FOREIGN DATA ATTACHED\nSOURCE: UNKNOWN';
+  txt.classList.remove('blink');
+  document.getElementById('continueCat').disabled=false;
 });
+
+document.getElementById('continueCat').addEventListener('click',()=>show('s10'));
+document.getElementById('to3').addEventListener('click',()=>show('s11'));
 </script>
 </body>
 </html>
