@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0d0f10">
-<title>Puzzle Society Field Network V1.2</title>
+<title>Puzzle Society Field Network V1.3</title>
 <style>
 :root {
   --bg:#0d0f10;
@@ -143,6 +143,25 @@ h1 { font-size:25px; margin:0 0 8px; font-weight:normal; }
   .shell { width:100%; border-left:0; border-right:0; border-top:0; }
   main { padding-bottom:22px; }
 }
+
+
+.btn.busy {
+  opacity:.72;
+  cursor:default;
+  pointer-events:none;
+}
+.btn.busy::after {
+  content:"";
+  display:inline-block;
+  width:10px;height:10px;
+  margin-left:9px;
+  border:1px solid currentColor;
+  border-right-color:transparent;
+  border-radius:50%;
+  vertical-align:-1px;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
 
 </style>
 </head>
@@ -354,7 +373,7 @@ CONTINUING RECOVERY PROTOCOL.</div>
     </section>
 
   </main>
-  <div class="footer">OBSERVE • QUESTION • DISCOVER</div>
+  <div class="footer">OBSERVE • QUESTION • DISCOVER<br><span style="opacity:.55">TEST BUILD 1.3</span></div>
 </div>
 
 <script>
@@ -365,12 +384,37 @@ function show(id) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function lockButton(btn, busyText) {
+  if (!btn || btn.dataset.used === '1') return false;
+  btn.dataset.used = '1';
+  btn.disabled = true;
+  btn.classList.add('busy');
+  if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent;
+  if (busyText) btn.textContent = busyText;
+  if (navigator.vibrate) navigator.vibrate(35);
+  return true;
+}
+
+function unlockButton(btn, label) {
+  if (!btn) return;
+  btn.disabled = false;
+  btn.classList.remove('busy');
+  btn.dataset.used = '0';
+  if (label) btn.textContent = label;
+}
+
+function successBuzz() {
+  if (navigator.vibrate) navigator.vibrate([45,55,90]);
+}
+
 setInterval(()=>{
   const d=new Date();
   document.getElementById('clock').textContent=d.toLocaleTimeString([],{hour12:false});
 },500);
 
-document.getElementById('connect').addEventListener('click', async()=>{
+document.getElementById('connect').addEventListener('click', async(e)=>{
+  if (!lockButton(e.currentTarget,'CONNECTING')) return;
   show('s2');
   const t=document.getElementById('scantext');
   await delay(900); t.textContent='SEARCHING LOCAL SIGNAL...\nSIGNAL FOUND';
@@ -379,12 +423,17 @@ document.getElementById('connect').addEventListener('click', async()=>{
   t.classList.remove('blink');
   document.getElementById('continue1').disabled=false;
 });
-document.getElementById('continue1').addEventListener('click',()=>show('s3'));
+document.getElementById('continue1').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'LOADING')) return;
+  show('s3');
+});
 
-document.getElementById('verify').addEventListener('click', async()=>{
+document.getElementById('verify').addEventListener('click', async(e)=>{
+  if (!lockButton(e.currentTarget,'VERIFYING')) return;
   show('s4');
   await delay(200);
   document.getElementById('p20').style.width='20%';
+  successBuzz();
   const r=document.getElementById('reconstruct');
   const txt=document.getElementById('reconText');
   await delay(1200);
@@ -395,7 +444,8 @@ document.getElementById('verify').addEventListener('click', async()=>{
   txt.classList.remove('blink');
   document.getElementById('continue2').disabled=false;
 });
-document.getElementById('continue2').addEventListener('click', async()=>{
+document.getElementById('continue2').addEventListener('click', async(e)=>{
+  if (!lockButton(e.currentTarget,'LOADING')) return;
   show('s5');
   const l=document.getElementById('localscan');
   await delay(1300); l.textContent='SEARCHING FOR AVAILABLE OPERATOR...\nLOCAL RESPONSE DETECTED';
@@ -404,14 +454,25 @@ document.getElementById('continue2').addEventListener('click', async()=>{
   l.classList.remove('blink');
   document.getElementById('identified').disabled=false;
 });
-document.getElementById('identified').addEventListener('click',()=>show('s6'));
-document.getElementById('begin').addEventListener('click',()=>show('s7'));
-document.getElementById('found2').addEventListener('click',()=>show('s8'));
+document.getElementById('identified').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'ACCESSING')) return;
+  show('s6');
+});
+document.getElementById('begin').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'SCANNING')) return;
+  show('s7');
+});
+document.getElementById('found2').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'PROCESSING')) return;
+  show('s8');
+});
 
-document.getElementById('verify2').addEventListener('click', async()=>{
+document.getElementById('verify2').addEventListener('click', async(e)=>{
+  if (!lockButton(e.currentTarget,'VERIFYING')) return;
   show('s9');
   await delay(200);
   document.getElementById('p40').style.width='40%';
+  successBuzz();
   const box=document.getElementById('catData');
   const txt=document.getElementById('catText');
   await delay(1000);
@@ -427,8 +488,14 @@ document.getElementById('verify2').addEventListener('click', async()=>{
   document.getElementById('continueCat').disabled=false;
 });
 
-document.getElementById('continueCat').addEventListener('click',()=>show('s10'));
-document.getElementById('to3').addEventListener('click',()=>show('s11'));
+document.getElementById('continueCat').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'OPENING DATA')) return;
+  show('s10');
+});
+document.getElementById('to3').addEventListener('click',(e)=>{
+  if (!lockButton(e.currentTarget,'SCANNING')) return;
+  show('s11');
+});
 </script>
 </body>
 </html>
