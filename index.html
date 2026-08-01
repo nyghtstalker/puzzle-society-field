@@ -653,12 +653,14 @@ REASSEMBLING DATA...</div>
         <div class="label">Recovered Message</div>
         <p>Amara. Connection restored.</p>
         <p>You did it.</p>
-        <p>The Network gave you fragments. Damaged signals. Incomplete information.</p>
-        <p>You found what was missing.</p>
+        <p>You handled that well.</p>
+        <p>The Network recovered damaged signals and pieces of information.</p>
+        <p>You followed the clues, figured out what they meant, and found every missing fragment.</p>
         <p><strong>Remember that.</strong></p>
-        <p>The Network can recover data. Only an investigator can give it meaning.</p>
+        <p>A machine can recover clues. It takes an investigator to understand them.</p>
         <p><strong>Case closed, Investigator Amara.</strong></p>
       </div>
+      <audio id="ravenAudio" preload="auto" src="assets/audio/raven-restored-transmission.mp3"></audio>
       <button class="btn" id="playRaven">Play Raven’s Transmission</button>
       <button class="btn" id="completeCase">Complete Case</button>
     </section>
@@ -874,30 +876,21 @@ document.getElementById('openRaven').addEventListener('click',(e)=>{
   show('s19');
 });
 document.getElementById('playRaven').addEventListener('click',(e)=>{
-  if (!('speechSynthesis' in window)) {
-    e.currentTarget.textContent='Audio Unavailable';
-    e.currentTarget.disabled=true;
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const message = new SpeechSynthesisUtterance(
-    'Amara. Connection restored. You did it. ' +
-    'The Network gave you fragments. Damaged signals. Incomplete information. ' +
-    'You found what was missing. Remember that. ' +
-    'The Network can recover data. Only an investigator can give it meaning. ' +
-    'Case closed, Investigator Amara.'
-  );
-  message.rate=.88;
-  message.pitch=.92;
-  const voices=window.speechSynthesis.getVoices();
-  const preferred=voices.find(v=>/samantha|victoria|zira|aria|jenny|female/i.test(v.name) && /^en/i.test(v.lang))
-    || voices.find(v=>/^en/i.test(v.lang));
-  if (preferred) message.voice=preferred;
-  window.speechSynthesis.speak(message);
+  const audio=document.getElementById('ravenAudio');
+  audio.currentTime=0;
+  e.currentTarget.textContent='Playing Raven’s Transmission...';
+  audio.play().catch(()=>{
+    e.currentTarget.textContent='Audio Unavailable — Read Message Above';
+  });
+});
+document.getElementById('ravenAudio').addEventListener('ended',()=>{
+  document.getElementById('playRaven').textContent='Replay Raven’s Transmission';
 });
 document.getElementById('completeCase').addEventListener('click',(e)=>{
   if (!lockButton(e.currentTarget,'CLOSING CASE')) return;
-  window.speechSynthesis?.cancel();
+  const audio=document.getElementById('ravenAudio');
+  audio.pause();
+  audio.currentTime=0;
   show('s20');
   successBuzz();
 });
@@ -925,6 +918,7 @@ function openTestingShortcut() {
 }
 window.addEventListener('hashchange', openTestingShortcut);
 openTestingShortcut();
+
 </script>
 </body>
 </html>
